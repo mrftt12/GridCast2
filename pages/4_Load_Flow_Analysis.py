@@ -67,6 +67,14 @@ with config_col2:
 if st.button("Create Network Model", type="primary"):
     with st.spinner("Creating network model..."):
         try:
+            print("Creating network model with the following parameters:")
+            print(f"Network Type: {network_type}")
+            print(f"Number of Buses: {num_buses}")
+            print(f"Number of Lines: {num_lines}")
+            print(f"Transformer Configuration: {transformer_config}")
+            print(f"Load Allocation: {load_allocation}")
+            print(f"Distributed Generation Buses: {dg_buses}")
+
             # Create the network based on configuration
             network = analyzer.create_network(
                 network_type=network_type,
@@ -81,13 +89,14 @@ if st.button("Create Network Model", type="primary"):
                 },
                 load_allocation=load_allocation,
                 dg_buses=dg_buses
-            )
+            )#FIXME:Error creating network model: Error creating network: Unknown standard trafo type 25 MVA 69/12.47 kV
             
             st.session_state.network_model = network
             st.success("Network model created successfully!")
             st.rerun()
             
         except Exception as e:
+            print(f"Error creating network model: {str(e)}")
             st.error(f"Error creating network model: {str(e)}")
 
 # Display Network Information

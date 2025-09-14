@@ -71,11 +71,17 @@ class PowerFlowAnalyzer:
                 )
                 
                 # Substation transformer
-                pp.create_transformer(
+                pp.create_transformer_from_parameters(
                     net,
                     hv_bus=hv_bus,
                     lv_bus=bus_indices[0],
-                    std_type="25 MVA 69/12.47 kV",  # Standard utility transformer
+                    sn_mva=transformer_config.get('rating_mva', 25.0),
+                    vn_hv_kv=transformer_config.get('hv_kv', 69.0),
+                    vn_lv_kv=transformer_config.get('lv_kv', 12.47),
+                    vk_percent=7.5,  # Short circuit voltage
+                    vkr_percent=0.5,  # Real part of short circuit voltage
+                    pfe_kw=10.0,  # Iron losses
+                    i0_percent=0.3,  # No-load current
                     name="Substation_Transformer"
                 )
                 
@@ -149,12 +155,15 @@ class PowerFlowAnalyzer:
                 # Variable line lengths for more realistic model
                 line_length = avg_line_length * (0.8 + 0.4 * np.random.random())
                 
-                pp.create_line(
+                pp.create_line_from_parameters(
                     net,
                     from_bus=bus_indices[i],
                     to_bus=bus_indices[i + 1],
                     length_km=line_length,
-                    std_type="NAYY 4x150 SE",  # Standard distribution cable
+                    r_ohm_per_km=0.25,
+                    x_ohm_per_km=0.35,
+                    c_nf_per_km=10.0,
+                    max_i_ka=0.3,
                     name=f"Line_{i+1}_{i+2}"
                 )
         
@@ -167,12 +176,15 @@ class PowerFlowAnalyzer:
                 next_bus = (i + 1) % main_loop_buses
                 line_length = feeder_length / main_loop_buses
                 
-                pp.create_line(
+                pp.create_line_from_parameters(
                     net,
                     from_bus=bus_indices[i],
                     to_bus=bus_indices[next_bus],
                     length_km=line_length,
-                    std_type="NAYY 4x150 SE",
+                    r_ohm_per_km=0.25,
+                    x_ohm_per_km=0.35,
+                    c_nf_per_km=10.0,
+                    max_i_ka=0.3,
                     name=f"Loop_Line_{i+1}_{next_bus+1}"
                 )
             
@@ -181,12 +193,15 @@ class PowerFlowAnalyzer:
                 parent_bus = np.random.randint(0, main_loop_buses)
                 branch_length = feeder_length * 0.3 * np.random.random()
                 
-                pp.create_line(
+                pp.create_line_from_parameters(
                     net,
                     from_bus=bus_indices[parent_bus],
                     to_bus=bus_indices[i],
                     length_km=branch_length,
-                    std_type="NAYY 4x95 SE",  # Smaller conductor for branches
+                    r_ohm_per_km=0.35,
+                    x_ohm_per_km=0.40,
+                    c_nf_per_km=8.0,
+                    max_i_ka=0.2,
                     name=f"Branch_Line_{parent_bus+1}_{i+1}"
                 )
         
@@ -196,12 +211,15 @@ class PowerFlowAnalyzer:
             for i in range(len(bus_indices) - 1):
                 line_length = avg_line_length
                 
-                pp.create_line(
+                pp.create_line_from_parameters(
                     net,
                     from_bus=bus_indices[i],
                     to_bus=bus_indices[i + 1],
                     length_km=line_length,
-                    std_type="NAYY 4x150 SE",
+                    r_ohm_per_km=0.25,
+                    x_ohm_per_km=0.35,
+                    c_nf_per_km=10.0,
+                    max_i_ka=0.3,
                     name=f"Line_{i+1}_{i+2}"
                 )
     
@@ -277,11 +295,11 @@ class PowerFlowAnalyzer:
     def _add_distributed_generation(self, net, bus_indices, dg_buses, feeder_config):
         """Add distributed generation to specified buses."""
         
-        dg_config = feeder_config.get('dg_config', {})
-        solar_capacity = dg_config.get('solar_capacity', 2.1)
+        # Get DG capacity from feeder config
+        total_dg_capacity = feeder_config.get('dg_capacity_mw', 2.1)
         
         # Distribute DG capacity among selected buses
-        dg_per_bus = solar_capacity / len(dg_buses)
+        dg_per_bus = total_dg_capacity / len(dg_buses)
         
         for bus_num in dg_buses:
             if bus_num <= len(bus_indices):
@@ -592,12 +610,15 @@ class PowerFlowAnalyzer:
             ]
             
             for from_bus, to_bus, length in line_data:
-                pp.create_line(
+                pp.create_line_from_parameters(
                     net,
                     from_bus=buses[from_bus],
                     to_bus=buses[to_bus],
                     length_km=length,
-                    std_type="NAYY 4x150 SE"
+                    r_ohm_per_km=0.25,
+                    x_ohm_per_km=0.35,
+                    c_nf_per_km=10.0,
+                    max_i_ka=0.3
                 )
             
             # Add loads

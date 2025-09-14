@@ -6,7 +6,7 @@ import os
 
 # Page configuration
 st.set_page_config(
-    page_title="Electric Utility Resource Planning",
+    page_title="GridCast Utility IRP",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -56,7 +56,7 @@ if 'loadflow_results' not in st.session_state:
     st.session_state.loadflow_results = None
 
 # Main page content
-st.title("⚡ Electric Utility Integrated Resource Planning")
+st.title("⚡ GridCast Utility IRP")
 st.markdown("---")
 
 # Introduction and overview
