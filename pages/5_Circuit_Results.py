@@ -15,9 +15,10 @@ st.markdown("Professional dashboard with load growth projections, peak demand an
 # Initialize data exporter
 exporter = DataExporter()
 
-# Check if we have data to display
-has_forecast = st.session_state.forecast_results is not None
-has_loadflow = st.session_state.loadflow_results is not None
+if st.session_state.forecast_results is not None:
+    has_forecast = st.session_state.forecast_results
+if st.session_state.loadflow_results is not None:
+    has_loadflow = st.session_state.loadflow_results
 
 if not has_forecast and not has_loadflow:
     st.warning("⚠️ No analysis results available. Please run forecasting or load flow analysis first.")

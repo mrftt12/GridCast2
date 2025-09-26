@@ -1,20 +1,19 @@
-# Importing the necessary libraries
+"""Data analyst agent for automated analysis and reporting."""
+
+# Standard library imports
 import os
+from contextlib import redirect_stdout
+from dataclasses import dataclass, field
+from io import StringIO
+from typing import Annotated
+
+# Third-party imports
+import pandas as pd
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-from typing import List
 from pydantic_ai import Agent, RunContext, Tool
 from pydantic_ai.models.openai import OpenAIModel
 from pydantic_ai.providers.openai import OpenAIProvider
-from typing import Annotated
-import asyncio
-from datetime import datetime
-from dataclasses import dataclass, field
-import os
-import pandas as pd
-import matplotlib.pyplot as plt
-from io import StringIO
-from contextlib import redirect_stdout
 load_dotenv()
 
 # Initializing the model
@@ -34,7 +33,7 @@ def get_column_list(
 ):
     """
     Use this tool to get the column list from the CSV file.
-    
+
     Parameters:
     - file_name: The name of the CSV file that has the data
     """
@@ -44,12 +43,14 @@ def get_column_list(
 
 # Getting the description of the column
 def get_column_description(
-    column_dict: Annotated[dict, "The dictionary of the column name and the description of the column"]
+    column_dict: Annotated[
+        dict, "The dictionary of the column name and the description of the column"
+    ]
 ):
     """
     Use this tool to get the description of the column.
     """
-    
+
     return str(column_dict)
 
 # Generating the graph
@@ -60,11 +61,12 @@ def graph_generator(
     Use this tool to generate graphs and visualizations using python code.
 
     Print the graph path in html and png format in the following format:
-    'The graph path in html format is <graph_path_html> and the graph path in png format is <graph_path_png>'.
+    'The graph path in html format is <graph_path_html> and the graph path in png
+    format is <graph_path_png>'.
 
     """
 
-    
+
     catcher = StringIO()
 
     try:
@@ -81,7 +83,7 @@ def graph_generator(
     except Exception as e:
         return f"Failed to run code. Error: {repr(e)}, try a different approach"
 
-    
+
 
 # Executing the python code
 def python_execution_tool(
@@ -94,7 +96,7 @@ def python_execution_tool(
     'The calculated value for <variable_name> is <calculated_value>'.
 
     """
-    
+
     catcher = StringIO()
 
     try:
@@ -117,22 +119,31 @@ def python_execution_tool(
 class AnalystAgentOutput(BaseModel):
     analysis_report: str = Field(description="The analysis report in markdown format")
     metrics: list[str] = Field(description="The metrics of the analysis")
-    image_html_path: str = Field(description="The path of the graph in html format, if no graph is generated, return empty string")
-    image_png_path: str = Field(description="The path of the graph in png format, if no graph is generated, return empty string")
+    image_html_path: str = Field(
+        description="The path of the graph in html format, if no graph is generated, return empty string"
+    )
+    image_png_path: str = Field(
+        description="The path of the graph in png format, if no graph is generated, return empty string"
+    )
     conclusion: str = Field(description="The conclusion of the analysis")
 
 analyst_agent = Agent(
     model=model,
-    tools=[Tool(get_column_list, takes_ctx=False), Tool(get_column_description, takes_ctx=False), Tool(graph_generator, takes_ctx=False), Tool(python_execution_tool, takes_ctx=False)],
+    tools=[
+        Tool(get_column_list, takes_ctx=False),
+        Tool(get_column_description, takes_ctx=False),
+        Tool(graph_generator, takes_ctx=False),
+        Tool(python_execution_tool, takes_ctx=False),
+    ],
     deps_type=State,
-    result_type=AnalystAgentOutput,
+    output_type=AnalystAgentOutput,
     instrument=True
 )
 
 # Defining the system prompt
 @analyst_agent.system_prompt
 async def get_analyst_agent_system_prompt(ctx: RunContext[State]):
-    
+
     prompt = f"""
     You are an expert data analyst agent responsible for executing comprehensive data analysis workflows and generating professional analytical reports.
 
@@ -141,10 +152,10 @@ async def get_analyst_agent_system_prompt(ctx: RunContext[State]):
 
     **Available Tools:**
     - `get_column_list`: Retrieve all column names from the dataset
-    - `get_column_description`: Get detailed descriptions and metadata for specific columns  
+    - `get_column_description`: Get detailed descriptions and metadata for specific columns
     - `graph_generator`: Create visualizations (charts, plots, graphs) and save them in HTML and PNG formats. Use plotly express library to make the graph interactive.
     - `python_execution_tool`: Execute Python code for statistical calculations, data processing, and metric computation
-    
+
     **Input Context:**
     - User Query: {ctx.deps.user_query}
     - Dataset File Name: {ctx.deps.file_name}

@@ -15,7 +15,7 @@ st.set_page_config(
 # Initialize session state variables
 if 'feeder_config' not in st.session_state:
     st.session_state.feeder_config = {
-        'name': 'Feeder_001',
+        'name': 'Circuit_001',
         'base_voltage': 12.47,
         'rated_capacity': 15.0,
         'length_km': 5.2,
@@ -63,10 +63,10 @@ st.markdown("---")
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.subheader("🏗️ Feeder Configuration")
-    st.write("Define feeder parameters, base load characteristics, distributed generation, and EV charging patterns.")
-    if st.button("Configure Feeder", use_container_width=True):
-        st.switch_page("pages/1_Feeder_Configuration.py")
+    st.subheader("🏗️ Circuit Configuration")
+    st.write("Define circuit parameters, base load characteristics, distributed generation, and EV charging patterns.")
+    if st.button("Configure Circuit", use_container_width=True):
+        st.switch_page("pages/1_Circuit_Configuration.py")
 
 with col2:
     st.subheader("📈 Load Forecasting")
@@ -91,10 +91,10 @@ with col4:
         st.switch_page("pages/4_Load_Flow_Analysis.py")
 
 with col5:
-    st.subheader("📋 Utility Dashboard")
+    st.subheader("📋 Circuit Results")
     st.write("Professional dashboard with load growth projections, peak demand analysis, and capacity planning.")
     if st.button("View Dashboard", use_container_width=True):
-        st.switch_page("pages/5_Dashboard.py")
+        st.switch_page("pages/5_Circuit_Results.py")
 
 with col6:
     st.subheader("💾 Export Data")
@@ -114,7 +114,7 @@ st.subheader("Current System Status")
 status_col1, status_col2, status_col3, status_col4 = st.columns(4)
 
 with status_col1:
-    st.metric("Active Feeder", st.session_state.feeder_config['name'])
+    st.metric("Active Circuit", st.session_state.feeder_config['name'])
 
 with status_col2:
     st.metric("Base Load (MW)", f"{st.session_state.feeder_config['base_load_mw']:.1f}")

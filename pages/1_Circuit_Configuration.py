@@ -4,18 +4,18 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-st.set_page_config(page_title="Feeder Configuration", page_icon="🏗️", layout="wide")
+st.set_page_config(page_title="Circuit Configuration", page_icon="🏗️", layout="wide")
 
-st.title("🏗️ Feeder Configuration")
-st.markdown("Configure feeder parameters, base load characteristics, distributed generation, and EV charging patterns.")
+st.title("🏗️ Circuit Configuration")
+st.markdown("Configure circuit parameters, base load characteristics, distributed generation, and EV charging patterns.")
 
-# Feeder Basic Parameters
-st.header("Basic Feeder Parameters")
+# Circuit Basic Parameters
+st.header("Basic Circuit Parameters")
 col1, col2 = st.columns(2)
 
 with col1:
-    feeder_name = st.text_input(
-        "Feeder Name", 
+    circuit_name = st.text_input(
+        "Circuit Name", 
         value=st.session_state.feeder_config['name']
     )
     base_voltage = st.number_input(
@@ -283,7 +283,7 @@ with col3:
 # Configuration Summary
 st.header("Configuration Summary")
 config_summary = pd.DataFrame([
-    {"Parameter": "Feeder Name", "Value": feeder_name},
+    {"Parameter": "Circuit Name", "Value": circuit_name},
     {"Parameter": "Base Voltage (kV)", "Value": f"{base_voltage:.1f}"},
     {"Parameter": "Rated Capacity (MVA)", "Value": f"{rated_capacity:.1f}"},
     {"Parameter": "Base Load (MW)", "Value": f"{base_load_mw:.1f}"},
