@@ -225,7 +225,7 @@ with col1:
     if st.button("Save Configuration", type="primary", use_container_width=True):
         # Update session state with new configuration
         st.session_state.feeder_config.update({
-            'name': feeder_name,
+            'name': circuit_name,
             'base_voltage': base_voltage,
             'rated_capacity': rated_capacity,
             'length_km': length_km,
